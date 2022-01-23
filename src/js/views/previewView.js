@@ -1,15 +1,10 @@
 import View from './View';
+import icons from 'url:../../img/icons.svg';
 
-class ResultsView extends View {
-  _parentElement = document.querySelector('.results');
-  _errorMessage = 'No recipes found for your query. Please try again!';
-  _successMessage = '';
+class PreviewView extends View {
+  _parentElement = '';
 
-  _generateMarkup() {
-    return this._data.map(this._generateMarkupPreview).join('');
-  }
-
-  _generateMarkupPreview({ id, title, publisher, imageUrl }) {
+  generateMarkup({ id, title, publisher, imageUrl }) {
     const hashId = window.location.hash.slice(1);
 
     return `
@@ -30,4 +25,4 @@ class ResultsView extends View {
   }
 }
 
-export default new ResultsView();
+export default new PreviewView();

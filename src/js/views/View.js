@@ -4,12 +4,51 @@ export default class View {
   _data;
 
   render(data) {
-    if (!data || (Array.isArray(data) && data.length === 0))
-      return this.renderError(this.__errorMessage);
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      this.renderError();
+      return;
+    }
+
     this._data = data;
     const markup = this._generateMarkup();
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  update(data) {
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      return;
+    }
+
+    this._data = data;
+    const updatedMarkup = this._generateMarkup();
+
+    const newDOM = document
+      .createRange()
+      .createContextualFragment(updatedMarkup);
+      
+    const newElements = [...newDOM.querySelectorAll('*')];
+    const currElements = [...this._parentElement.querySelectorAll('*')];
+
+    // Compare both ELEMENTS
+    newElements.forEach((newEl, i) => {
+      const curEl = currElements[i];
+
+      // Updated changed TEXT
+      if (
+        !newEl.isEqualNode(curEl) &&
+        newEl.firstChild?.nodeValue.trim() !== ''
+      ) {
+        curEl.textContent = newEl.textContent;
+      }
+
+      // Updated changed ATTRIBUTE
+      if (!newEl.isEqualNode(curEl)) {
+        [...newEl.attributes].forEach(attr =>
+          curEl.setAttribute(attr.name, attr.value)
+        );
+      }
+    });
   }
 
   _clear() {

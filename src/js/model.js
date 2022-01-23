@@ -1,5 +1,5 @@
 import { async } from 'regenerator-runtime';
-import { API_URL, RES_PER_PAGE } from './config';
+import { API_URL, RES_PER_PAGE, STARTING_PAGE } from './config';
 import { getJSON } from './helper';
 
 export const state = {
@@ -8,14 +8,14 @@ export const state = {
     query: '',
     results: [],
     resultsPerPage: RES_PER_PAGE,
-    page: 1,
+    page: STARTING_PAGE,
   },
+  bookmarks: [],
 };
 
-export const loadRecipe = async hashId => {
+export const loadRecipe = async function (hashId) {
   try {
     const data = await getJSON(`${API_URL}${hashId}`);
-
     const {
       id,
       title,
@@ -36,38 +36,57 @@ export const loadRecipe = async hashId => {
       ingredients,
       cookingTime,
       servings,
+      isBookmarked: state.bookmarks.some(b => b.id === id),
     };
   } catch (error) {
-    console.error(`${error} ******`);
+    console.error(`*** ${error} ***`);
     throw error;
   }
 };
 
-export const loadSearchResults = async query => {
+export const loadSearchResults = async function (query) {
   try {
     state.search.query = query;
-
     const data = await getJSON(`${API_URL}?search=${query}`);
-
-    state.search.results = data.data.recipes.map(
-      ({ id, title, publisher, image_url }) => {
-        return {
-          id,
-          title,
-          publisher,
-          imageUrl: image_url,
-        };
-      }
+    const { recipes } = data.data;
+    state.search.results = recipes.map(
+      ({ id, title, publisher, image_url: imageUrl }) => ({
+        id,
+        title,
+        publisher,
+        imageUrl,
+      })
     );
+    state.search.page = STARTING_PAGE; // reset starting page
   } catch (error) {
-    console.error(`${error} ******`);
+    console.error(`*** ${error} ***`);
     throw error;
   }
 };
 
-export const getSearchResultsPage = (page = state.search.page) => {
-  state.search.page = page;
-  const start = (page - 1) * state.search.resultsPerPage;
-  const end = page * state.search.resultsPerPage;
+export const getSearchResultsPage = function (page = STARTING_PAGE) {
+  state.search.page = page; // track current page
+  const start = (page - 1) * RES_PER_PAGE;
+  const end = page * RES_PER_PAGE;
+
   return state.search.results.slice(start, end);
+};
+
+export const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
+  });
+  // Track servings
+  state.recipe.servings = newServings;
+};
+
+export const addBookmark = function (recipe) {
+  state.bookmarks.push(recipe);
+  if (state.recipe.id === recipe.id) state.recipe.isBookmarked = true;
+};
+
+export const deleteBookmark = function (id) {
+  const index = state.bookmarks.findIndex(b => b.id === id);
+  state.bookmarks.splice(index, 1);
+  if (state.recipe.id === id) state.recipe.isBookmarked = false;
 };

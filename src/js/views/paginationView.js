@@ -15,12 +15,11 @@ class PaginationView extends View {
 
   _generateMarkup() {
     const currPage = this._data.page;
-    const numPages = Math.ceil(
+    const totalPages = Math.ceil(
       this._data.results.length / this._data.resultsPerPage
     );
-
     // page 1, there are other pages
-    if (currPage === 1 && numPages > 1) {
+    if (currPage === 1 && totalPages > 1) {
       return `
         <button data-goto="${
           currPage + 1
@@ -33,7 +32,7 @@ class PaginationView extends View {
       `;
     }
     // last page
-    if (currPage === numPages && numPages > 1) {
+    if (currPage === totalPages && totalPages > 1) {
       return `
         <button data-goto="${
           currPage - 1
@@ -46,7 +45,7 @@ class PaginationView extends View {
         `;
     }
     // other page
-    if (currPage < numPages) {
+    if (currPage < totalPages) {
       return `
         <button data-goto="${
           currPage - 1
@@ -67,7 +66,7 @@ class PaginationView extends View {
         `;
     }
     // page 1, there are no pages
-    if (currPage === 1 && numPages === 1) {
+    if (currPage === 1 && totalPages === 1) {
       return '';
     }
   }

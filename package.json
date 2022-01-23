@@ -8,13 +8,14 @@
   },
   "author": "Sindu Andita Pratama",
   "license": "ISC",
-  "devDependencies": {
-    "@parcel/transformer-sass": "^2.0.1",
-    "parcel": "^2.0.1"
-  },
   "dependencies": {
     "core-js": "^3.19.3",
     "fractional": "^1.0.0",
     "regenerator-runtime": "^0.13.9"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.2.0",
+    "parcel": "^2.2.0",
+    "sass": "^1.48.0"
   }
 }

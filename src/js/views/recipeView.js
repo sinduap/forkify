@@ -8,15 +8,26 @@ class RecipeView extends View {
   _errorMessage = "We couldn't find that recipe. Please try again!";
   _successMessage = '';
 
-  addHandleRender(handler) {
-    const configAddEventListener = {
-      events: ['hashchange', 'load'],
-      handler,
-    };
+  addHandlerRender(handler) {
+    const events = ['hashchange', 'load'];
+    events.forEach(evt => window.addEventListener(evt, handler));
+  }
 
-    configAddEventListener.events.map(evt =>
-      window.addEventListener(evt, configAddEventListener.handler)
-    );
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener('click', event => {
+      const btn = event.target.closest('.btn--update-servings');
+      if (!btn) return;
+      const { updateTo } = btn.dataset;
+      if (+updateTo > 0 && +updateTo <= 12) handler(+updateTo);
+    });
+  }
+
+  addHandlerBookmark(handler) {
+    this._parentElement.addEventListener('click', event => {
+      const btn = event.target.closest('.btn--bookmark');
+      if (!btn) return;
+      handler();
+    });
   }
 
   _generateMarkup() {
@@ -29,50 +40,58 @@ class RecipeView extends View {
       ingredients,
       cookingTime,
       publisher,
+      isBookmarked,
     } = this._data;
+
     return `
     <figure class="recipe__fig">
-    <img src=${imageUrl} alt="Tomato" class="recipe__img" />
+      <img src=${imageUrl} alt="${title}" class="recipe__img" />
       <h1 class="recipe__title">
       <span>${title}</span>
       </h1>
-      </figure>
+    </figure>
       
-      <div class="recipe__details">
+    <div class="recipe__details">
       <div class="recipe__info">
-      <svg class="recipe__info-icon">
-      <use href="${icons}#icon-clock"></use>
-      </svg>
-      <span class="recipe__info-data recipe__info-data--minutes">${cookingTime}</span>
-      <span class="recipe__info-text">minutes</span>
+        <svg class="recipe__info-icon">
+        <use href="${icons}#icon-clock"></use>
+        </svg>
+        <span class="recipe__info-data recipe__info-data--minutes">${cookingTime}</span>
+        <span class="recipe__info-text">minutes</span>
       </div>
       <div class="recipe__info">
-      <svg class="recipe__info-icon">
-      <use href="${icons}#icon-users"></use>
-      </svg>
-      <span class="recipe__info-data recipe__info-data--people">${servings}</span>
-      <span class="recipe__info-text">servings</span>
+        <svg class="recipe__info-icon">
+        <use href="${icons}#icon-users"></use>
+        </svg>
+        <span class="recipe__info-data recipe__info-data--people">${servings}</span>
+        <span class="recipe__info-text">servings</span>
 
-      <div class="recipe__info-buttons">
-      <button class="btn--tiny btn--increase-servings">
-      <svg>
-      <use href="${icons}#icon-minus-circle"></use>
-      </svg>
-      </button>
-      <button class="btn--tiny btn--increase-servings">
-      <svg>
-      <use href="${icons}#icon-plus-circle"></use>
-      </svg>
-      </button>
-      </div>
+        <div class="recipe__info-buttons">
+          <button class="btn--tiny btn--update-servings" data-update-to="${
+            servings - 2
+          }">
+          <svg>
+          <use href="${icons}#icon-minus-circle"></use>
+          </svg>
+          </button>
+          <button class="btn--tiny btn--update-servings" data-update-to="${
+            servings + 2
+          }">
+          <svg>
+          <use href="${icons}#icon-plus-circle"></use>
+          </svg>
+          </button>
+        </div>
       </div>
       
       <div class="recipe__user-generated">
      
       </div>
-      <button class="btn--round">
+      <button class="btn--round btn--bookmark">
         <svg class="">
-          <use href="${icons}#icon-bookmark-fill"></use>
+          <use href="${icons}#icon-bookmark${
+      isBookmarked ? '-fill' : ''
+    }"></use>
         </svg>
       </button>
     </div>
@@ -80,7 +99,7 @@ class RecipeView extends View {
     <div class="recipe__ingredients">
       <h2 class="heading--2">Recipe ingredients</h2>
       <ul class="recipe__ingredient-list">
-        ${this._generateMarkupIngredients(ingredients)}
+        ${ingredients.map(this._generateMarkupIngredient).join('')}
       </ul>
     </div>
 
@@ -104,24 +123,20 @@ class RecipeView extends View {
     </div>`;
   }
 
-  _generateMarkupIngredients(ingredients) {
-    return ingredients
-      .map(
-        ({ description, quantity, unit }) => `
-          <li class="recipe__ingredient">
-            <svg class="recipe__icon">
-              <use href="${icons}#icon-check"></use>
-            </svg>
-            <div class="recipe__quantity">${
-              quantity ? new Fraction(quantity).toString() : ''
-            }</div>
-            <div class="recipe__description">
-              <span class="recipe__unit">${unit || ''}</span>
-              ${description}
-            </div>
-          </li>`
-      )
-      .join('');
+  _generateMarkupIngredient({ description, quantity, unit }) {
+    return `
+      <li class="recipe__ingredient">
+        <svg class="recipe__icon">
+          <use href="${icons}#icon-check"></use>
+        </svg>
+        <div class="recipe__quantity">${
+          quantity ? new Fraction(quantity).toString() : ''
+        }</div>
+        <div class="recipe__description">
+          <span class="recipe__unit">${unit}</span>
+          ${description}
+        </div>
+      </li>`;
   }
 }
 
