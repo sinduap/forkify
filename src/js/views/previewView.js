@@ -4,9 +4,8 @@ import icons from 'url:../../img/icons.svg';
 class PreviewView extends View {
   _parentElement = '';
 
-  generateMarkup({ id, title, publisher, imageUrl }) {
+  generateMarkup({ id, title, publisher, imageUrl, key }) {
     const hashId = window.location.hash.slice(1);
-
     return `
       <li class="preview">
         <a class="preview__link ${
@@ -18,6 +17,11 @@ class PreviewView extends View {
           <div class="preview__data">
             <h4 class="preview__title">${title}</h4>
             <p class="preview__publisher">${publisher}</p>
+            <div class="preview__user-generated ${key ? '' : 'hidden'}">
+              <svg>
+                <use href="${icons}#icon-user"></use>
+              </svg>
+            </div>
           </div>
         </a>
       </li>

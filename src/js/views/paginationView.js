@@ -14,6 +14,8 @@ class PaginationView extends View {
   }
 
   _generateMarkup() {
+    if (!this._data.results.length) return '';
+
     const currPage = this._data.page;
     const totalPages = Math.ceil(
       this._data.results.length / this._data.resultsPerPage

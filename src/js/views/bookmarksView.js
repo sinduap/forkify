@@ -6,11 +6,15 @@ class BookmarksView extends View {
   _errorMessage = 'No bookmarks yet. Find an recipe and bookmark it!';
   _successMessage = '';
 
+  addHandlerRender(handler) {
+    window.addEventListener('load', handler);
+  }
+
   _generateMarkup() {
     return this._data.map(this._generateMarkupPreview).join('');
   }
 
-  _generateMarkupPreview({ id, title, publisher, imageUrl }) {
+  _generateMarkupPreview({ id, title, publisher, imageUrl, key }) {
     const hashId = window.location.hash.slice(1);
 
     return `
@@ -24,6 +28,11 @@ class BookmarksView extends View {
           <div class="preview__data">
             <h4 class="preview__title">${title}</h4>
             <p class="preview__publisher">${publisher}</p>
+            <div class="preview__user-generated ${key ? '' : 'hidden'}">
+              <svg>
+                <use href="${icons}#icon-user"></use>
+              </svg>
+            </div>
           </div>
         </a>
       </li>

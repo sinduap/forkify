@@ -3,6 +3,13 @@ import icons from 'url:../../img/icons.svg';
 export default class View {
   _data;
 
+  /**
+   * Render the received object to the DOM
+   * @param {{} | []} data The data to be rendered
+   * @returns {void} create side effects
+   * @this {{}} View instance
+   * @author Sindu Andita Pratama
+   */
   render(data) {
     if (!data || (Array.isArray(data) && data.length === 0)) {
       this.renderError();
@@ -15,6 +22,13 @@ export default class View {
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
+  /**
+   * Compare the current with the previous DOM, and only update the differences
+   * @param {{} | []} data The data to be updated
+   * @returns {void} create side effects
+   * @this {{}} View instance
+   * @author Sindu Andita Pratama
+   */
   update(data) {
     if (!data || (Array.isArray(data) && data.length === 0)) {
       return;
@@ -26,7 +40,7 @@ export default class View {
     const newDOM = document
       .createRange()
       .createContextualFragment(updatedMarkup);
-      
+
     const newElements = [...newDOM.querySelectorAll('*')];
     const currElements = [...this._parentElement.querySelectorAll('*')];
 
