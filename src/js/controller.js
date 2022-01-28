@@ -14,22 +14,17 @@ import 'regenerator-runtime/runtime';
 
 ///////////////////////////////////////
 
-if (module.hot) {
-  module.hot.accept();
-}
+if (module.hot) module.hot.accept();
 
 const controlRecipes = async function () {
   try {
     const id = window.location.hash.slice(1);
     if (!id) return;
     recipeView.renderSpinner();
-    // Re-render result and bookmarks
+    await model.loadRecipe(id);
+    recipeView.render(model.state.recipe);
     resultsView.update(model.getSearchResultsPage(model.state.search.page));
     bookmarksView.update(model.state.bookmarks);
-    // Loading recipe
-    await model.loadRecipe(id);
-    // Rendering recipe
-    recipeView.render(model.state.recipe);
   } catch (error) {
     recipeView.renderError();
     console.error(error);
@@ -42,6 +37,7 @@ const controlSearchResults = async function () {
     if (!query) return;
     resultsView.renderSpinner();
     await model.loadSearchResults(query);
+    resultsView.show();
     resultsView.render(model.getSearchResultsPage());
     paginationView.render(model.state.search);
   } catch (error) {
@@ -60,15 +56,12 @@ const controlServings = function (newServings) {
 };
 
 const controlAddBookmark = function () {
-  // Add or remove a bookmark
   if (!model.state.recipe.isBookmarked) {
     model.addBookmark(model.state.recipe);
   } else {
     model.deleteBookmark(model.state.recipe.id);
   }
-  // Update recipe view
   recipeView.update(model.state.recipe);
-  // Render bookmarks
   bookmarksView.render(model.state.bookmarks);
 };
 
@@ -80,19 +73,12 @@ const controlUploadRecipe = async function (newRecipe) {
   try {
     addRecipeView.renderSpinner();
     await model.uploadRecipe(newRecipe);
-
     recipeView.render(model.state.recipe);
-
     addRecipeView.renderMessage();
-
     bookmarksView.render(model.state.bookmarks);
-
     window.history.pushState(null, '', `#${model.state.recipe.id}`);
-    window.location.reload()
-
-    setTimeout(() => {
-      addRecipeView.toggleWindow();
-    }, MODAL_CLOSE_SEC);
+    window.location.reload();
+    setTimeout(addRecipeView.toggleWindow, MODAL_CLOSE_SEC);
   } catch (err) {
     console.error(`${err}`);
     addRecipeView.renderError(err.message);

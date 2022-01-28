@@ -63,7 +63,7 @@ export const loadSearchResults = async function (query) {
         ...(key && { key }),
       })
     );
-    state.search.page = STARTING_PAGE; // reset starting page
+    state.search.page = STARTING_PAGE;
   } catch (error) {
     console.error(`*** ${error} ***`);
     throw error;
@@ -71,7 +71,7 @@ export const loadSearchResults = async function (query) {
 };
 
 export const getSearchResultsPage = function (page = STARTING_PAGE) {
-  state.search.page = page; // track current page
+  state.search.page = page;
   const start = (page - 1) * RES_PER_PAGE;
   const end = page * RES_PER_PAGE;
 
@@ -79,10 +79,10 @@ export const getSearchResultsPage = function (page = STARTING_PAGE) {
 };
 
 export const updateServings = function (newServings) {
-  state.recipe.ingredients.forEach(ing => {
-    ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
-  });
-  // Track servings
+  state.recipe.ingredients.forEach(
+    ing => (ing.quantity = (ing.quantity * newServings) / state.recipe.servings)
+  );
+
   state.recipe.servings = newServings;
 };
 
@@ -108,9 +108,7 @@ export const uploadRecipe = async function (dataRecipe) {
       .map(([key, val]) => {
         if (isContainIngredient(key)) {
           const valArr = val.split(',').map(el => el.trim());
-          if (valArr.length !== 3) {
-            throw new Error('Wrong format');
-          }
+          if (valArr.length !== 3) new Error('Wrong format');
           const [quantity, unit, description] = valArr;
           return {
             [key]: {
@@ -124,12 +122,10 @@ export const uploadRecipe = async function (dataRecipe) {
       })
       .reduce((acc, entry) => {
         const [key, val] = Object.entries(entry)[0];
-        if (isContainIngredient(key) && !acc.ingredients) {
+        if (isContainIngredient(key) && !acc.ingredients)
           return { ...acc, ingredients: [val] };
-        }
-        if (isContainIngredient(key)) {
+        if (isContainIngredient(key))
           return { ...acc, ingredients: [...acc.ingredients, val] };
-        }
         return { ...acc, ...entry };
       }, {});
 

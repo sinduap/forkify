@@ -1,4 +1,5 @@
 import View from './View';
+import slider from '../slider';
 
 import icons from 'url:../../img/icons.svg';
 import { Fraction } from 'fractional';
@@ -7,6 +8,11 @@ class RecipeView extends View {
   _parentElement = document.querySelector('.recipe');
   _errorMessage = "We couldn't find that recipe. Please try again!";
   _successMessage = '';
+
+  constructor() {
+    super();
+    slider();
+  }
 
   addHandlerRender(handler) {
     const events = ['hashchange', 'load'];

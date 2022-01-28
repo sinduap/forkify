@@ -34,6 +34,10 @@ html {
   @media only screen and (max-width: $bp-medium) {
     font-size: 50%;
   }
+
+  @media only screen and (max-width: $bp-smallest) {
+    font-size: 25%;
+  }
 }
 
 body {
@@ -49,7 +53,7 @@ body {
 
 .container {
   max-width: 120rem;
-  min-height: 117rem;
+  // min-height: 117rem;
   margin: 4vw auto;
   background-color: #fff;
   border-radius: 9px;
@@ -57,15 +61,21 @@ body {
   box-shadow: 0 2rem 6rem 0.5rem rgba($color-grey-dark-1, 0.2);
 
   display: grid;
-  grid-template-rows: 10rem minmax(100rem, auto);
+  grid-template-rows: 10rem minmax(auto, auto);
   grid-template-columns: 1fr 2fr;
   grid-template-areas:
     'head head'
-    'list recipe';
+    'recipe recipe';
 
   @media only screen and (max-width: $bp-large) {
     max-width: 100%;
     margin: 0;
     border-radius: 0;
   }
+}
+
+.grid-search-result {
+  grid-template-areas:
+    'head head'
+    'list recipe';
 }

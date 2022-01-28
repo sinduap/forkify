@@ -5,6 +5,13 @@ class ResultsView extends View {
   _errorMessage = 'No recipes found for your query. Please try again!';
   _successMessage = '';
 
+  show() {
+    this._parentElement.closest('.search-results').classList.remove('hide');
+    this._parentElement
+      .closest('.container')
+      .classList.add('grid-search-result');
+  }
+
   _generateMarkup() {
     return this._data.map(this._generateMarkupPreview).join('');
   }

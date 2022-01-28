@@ -2,6 +2,11 @@
   padding: 3rem 0;
   display: flex;
   flex-direction: column;
+  grid-area: list;
+}
+
+.hide {
+  display: none;
 }
 
 .results {
